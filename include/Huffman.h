@@ -15,6 +15,8 @@
 #define DECODE_FILE "../resources/decode_table.txt"
 #define RES_FILE "../resources/VNESEcorpus.txt"
 
+const uint32_t UINT32_LIM = 1<<31;
+
 class Huffman {
 public:
     std::shared_ptr<HuffmanTreeNode> root;
@@ -104,29 +106,57 @@ public:
         return root;
     }
 
-    std::string get_code(const std::string &text) {
-        std::string encode = "";
+    std::vector<uint32_t> encode(const std::string &text) {
+        //std::string encoded = "";
         std::string normalized_text = text;//VnLangTool::normalize_lower_NFD_UTF(text);
         std::vector<uint32_t> utf8_text = VnLangTool::to_UTF(normalized_text);
+
+        std::vector<uint32_t> encoded;
+        encoded.push_back(1);
+        int tail = 0;
+
         for (uint32_t code : utf8_text) {
             if (huffman_table[code] == "")
                 std::cout << "encode error " << code << "\n";
-            encode += huffman_table[code];
-        }
-        return encode;
-    }
-
-    std::string decode(const std::string &text) {
-        std::vector<uint32_t> utf8_text;
-        std::string code = "";
-        for (char c : text) {
-            code += c;
-            if (re_huffman_table[code]) {
-                utf8_text.push_back(re_huffman_table[code]);
-                code = "";
+            for (char c : huffman_table[code]) {
+                int bit = c -'0';
+                encoded[tail] = encoded[tail]*2+bit;
+                if (encoded[tail] >= UINT32_LIM) {
+                    encoded.push_back(1);
+                    tail++;
+                }
             }
         }
-        if (code != "")
+        return encoded;
+    }
+
+    std::string int_to_string(uint32_t code) {
+        std::string str = std::bitset<32>(code).to_string();
+        std::string normalized_str = "";
+        bool flag = false;
+        for (char c: str) {
+            if (flag) {
+                normalized_str += c;
+            }
+            if (c != '0')
+                flag = true;
+        }
+        return normalized_str;
+    }
+    std::string decode(std::vector<uint32_t> text) {
+        std::vector<uint32_t> utf8_text;
+        std::string prefix = "";
+        for (uint32_t code : text) {
+            std::string binary_str = int_to_string(code);
+            for (char c: binary_str) {
+                prefix += c;
+                if (re_huffman_table[prefix]) {
+                    utf8_text.push_back(re_huffman_table[prefix]);
+                    prefix = "";
+                }
+            }
+        }
+        if (prefix != "")
             std::cout << "decode error!\n";
         std::string decoded = VnLangTool::vector_to_string(utf8_text);
         return decoded;

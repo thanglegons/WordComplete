@@ -14,10 +14,10 @@
 #include "HuffmanTreeNode.h"
 #include "vn_lang_tool.h"
 
-#define DECODE_FILE "./resources/decode_table.txt"
-#define RES_FILE "./resources/VNESEcorpus.txt"
+#define DECODE_FILE "../resources/decode_table.txt"
+#define RES_FILE "../resources/VNESEcorpus.txt"
 
-const uint32_t UINT32_LIM = 1<<31;
+const uint32_t UINT32_LIM = uint32_t(1) << uint32_t(31);
 
 class Huffman {
 public:
@@ -109,9 +109,9 @@ public:
         return root;
     }
 
-    std::vector<uint32_t> encode(const std::string &text) {
+    uint32_t *encode(const std::string &text) {
         //std::string encoded = "";
-        const std::string& normalized_text = text;//VnLangTool::normalize_lower_NFD_UTF(text);
+        const std::string &normalized_text = text;//VnLangTool::normalize_lower_NFD_UTF(text);
         std::vector<uint32_t> utf8_text = VnLangTool::to_UTF(normalized_text);
 
         std::vector<uint32_t> encoded;
@@ -122,15 +122,20 @@ public:
             if (huffman_table[code].empty())
                 std::cout << "encode error " << code << "\n";
             for (char c : huffman_table[code]) {
-                int bit = c -'0';
-                encoded[tail] = encoded[tail]*2+bit;
+                int bit = c - '0';
+                encoded[tail] = encoded[tail] * 2 + bit;
                 if (encoded[tail] >= UINT32_LIM) {
                     encoded.push_back(1);
                     tail++;
                 }
             }
         }
-        return encoded;
+        tail = encoded.size();
+        auto da_encoded = new uint32_t[tail + 1];
+        da_encoded[0] = tail;
+        for (int i = 1; i <= tail; i++)
+            da_encoded[i] = encoded[i - 1];
+        return da_encoded;
     }
 
     static std::string int_to_string(uint32_t code) {
@@ -146,9 +151,15 @@ public:
         }
         return normalized_str;
     }
-    std::string decode(const std::vector<uint32_t>& text) {
+
+    std::string decode(uint32_t da_text[]) {
         std::vector<uint32_t> utf8_text;
+        std::vector<uint32_t> text;
         std::string prefix;
+        uint32_t size = da_text[0];
+        for (int i = 1; i <= size; i++) {
+            text.push_back(da_text[i]);
+        }
         for (uint32_t code : text) {
             std::string binary_str = int_to_string(code);
             for (char c: binary_str) {

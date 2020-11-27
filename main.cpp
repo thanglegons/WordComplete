@@ -10,8 +10,8 @@ using namespace std;
 
 int main() {
     Huffman huffman;
-    std::string text = "kết quả có vẻ hơi lạ nhưng thắng bị gay lmao kill me please mình đang làm gì thế này";
-    vector<uint32_t> encoded = huffman.encode(text);
+    std::string text = "kết quả có vẻ hơi lạ nhưng thắng bị gay lmao kill me please mình đang làm gì thế này  lol kay";
+    uint32_t* encoded = huffman.encode(text);
     //std::string encoded_manual_text = "11001001000111001101100111001101110000000011110111001010011000101110011111101101100101001000101100001100011001111110111110001111111010010011101110010011011111101001000011100000110111010001001110000";
     cout<<"Input text : "<<text<<"\n";
     //cout<<"Test encode : "<<encoded<<"\n";

@@ -5,4 +5,4 @@ include_directories(include)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(WordComplete main.cpp)
+add_executable(WordComplete main.cpp include/Huffman.h)

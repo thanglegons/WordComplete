@@ -3,7 +3,7 @@
 #include <trie/node.h>
 #include <trie/trie.h>
 #include <autocomplete.h>
-#include "Huffman.h"
+#include "huffman/Huffman.h"
 #include <queue>
 
 using namespace std;

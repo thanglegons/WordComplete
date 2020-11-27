@@ -30,6 +30,7 @@ public:
                 std::cout << counter << "\n";
             if (counter == 10000) break;
         }
+        input_file.close();
     }
 
     std::vector<Candidate> get_sub_suggestion(const std::string& sub_string) {

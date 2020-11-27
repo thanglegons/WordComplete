@@ -10,10 +10,12 @@
 #include <fstream>
 #include <queue>
 #include <map>
+#include <memory>
 #include "HuffmanTreeNode.h"
+#include "vn_lang_tool.h"
 
-#define DECODE_FILE "../resources/decode_table.txt"
-#define RES_FILE "../resources/VNESEcorpus.txt"
+#define DECODE_FILE "./resources/decode_table.txt"
+#define RES_FILE "./resources/VNESEcorpus.txt"
 
 const uint32_t UINT32_LIM = 1<<31;
 
@@ -26,7 +28,7 @@ public:
 
     void BuildTable(std::shared_ptr<HuffmanTreeNode> node, int depth, char encoding[]) {
         if (node->left == nullptr && node->right == nullptr) {
-            std::string decode = "";
+            std::string decode;
             huffman_table[node->data] = "";
             for (int i = 0; i < depth; i++)
                 decode += char('0' + encoding[i]);
@@ -59,7 +61,7 @@ public:
         std::ifstream input_file;
         input_file.open(data_path);
         std::string line;
-        std::string text = "";
+        std::string text;
         while (getline(input_file, line)) {
             // normalize each line
             std::string normalized_line = VnLangTool::normalize_lower_NFD_UTF(line);
@@ -100,6 +102,7 @@ public:
         root = huffman_pq.top();
         char arr[MAX_SIZE];
         BuildTable(root, 0, arr);
+        input_file.close();
     }
 
     std::shared_ptr<HuffmanTreeNode> get_root() {
@@ -108,7 +111,7 @@ public:
 
     std::vector<uint32_t> encode(const std::string &text) {
         //std::string encoded = "";
-        std::string normalized_text = text;//VnLangTool::normalize_lower_NFD_UTF(text);
+        const std::string& normalized_text = text;//VnLangTool::normalize_lower_NFD_UTF(text);
         std::vector<uint32_t> utf8_text = VnLangTool::to_UTF(normalized_text);
 
         std::vector<uint32_t> encoded;
@@ -116,7 +119,7 @@ public:
         int tail = 0;
 
         for (uint32_t code : utf8_text) {
-            if (huffman_table[code] == "")
+            if (huffman_table[code].empty())
                 std::cout << "encode error " << code << "\n";
             for (char c : huffman_table[code]) {
                 int bit = c -'0';
@@ -130,9 +133,9 @@ public:
         return encoded;
     }
 
-    std::string int_to_string(uint32_t code) {
+    static std::string int_to_string(uint32_t code) {
         std::string str = std::bitset<32>(code).to_string();
-        std::string normalized_str = "";
+        std::string normalized_str;
         bool flag = false;
         for (char c: str) {
             if (flag) {
@@ -143,9 +146,9 @@ public:
         }
         return normalized_str;
     }
-    std::string decode(std::vector<uint32_t> text) {
+    std::string decode(const std::vector<uint32_t>& text) {
         std::vector<uint32_t> utf8_text;
-        std::string prefix = "";
+        std::string prefix;
         for (uint32_t code : text) {
             std::string binary_str = int_to_string(code);
             for (char c: binary_str) {
@@ -156,7 +159,7 @@ public:
                 }
             }
         }
-        if (prefix != "")
+        if (!prefix.empty())
             std::cout << "decode error!\n";
         std::string decoded = VnLangTool::vector_to_string(utf8_text);
         return decoded;
@@ -175,6 +178,7 @@ public:
         for (it2 = huffman_table.begin(); it2 != huffman_table.end(); it2++) {
             fo << it2->first << " " << it2->second << "\n";
         }
+        fo.close();
     }
 
     int loadDecodeTableFromFile() {
@@ -197,8 +201,10 @@ public:
                 fi >> value >> key;
                 huffman_table[value] = key;
             }
+            fi.close();
             return 1;
         }
+        fi.close();
         return 0;
     }
 };

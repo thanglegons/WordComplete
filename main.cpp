@@ -3,18 +3,27 @@
 #include <trie/node.h>
 #include <trie/trie.h>
 #include <autocomplete.h>
+#include "Huffman.h"
 #include <queue>
 
 using namespace std;
 
 int main() {
+    Huffman huffman;
+    std::string text = "kết quả có vẻ hơi lạ nhưng thắng bị gay";
+    std::string encoded = huffman.get_code(text);
+    std::string encoded_manual_text = "11001001000111001101100111001101110000000011110111001010011000101110011111101101100101001000101100001100011001111110111110001111111010010011101110010011011111101001000011100000110111010001001110000";
+    cout<<"Input text : "<<text<<"\n";
+    cout<<"Test encode : "<<encoded<<"\n";
+    cout<<"Test decode : "<<huffman.decode(encoded_manual_text);
+//    huffman.saveDecodeTable();
 
-    AutoComplete autoComplete;
-    autoComplete.load_data("./resources/VNESEcorpus.txt");
-    std::vector<Candidate> suggestion = autoComplete.get_suggestion("của các nhà hảo tâm gửi giúp trước sự chứng kiến c");
-    for (const Candidate& sug : suggestion) {
-        cout << sug.get_suffix() << " " << sug.get_count() << "\n";
-    }
+//    AutoComplete autoComplete;
+//    autoComplete.load_data("./resources/VNESEcorpus.txt");
+//    std::vector<Candidate> suggestion = autoComplete.get_suggestion("của các nhà hảo tâm gửi giúp trước sự chứng kiến c");
+//    for (const Candidate& sug : suggestion) {
+//        cout << sug.get_suffix() << " " << sug.get_count() << "\n";
+//    }
 
 //    vector<string> ngrams = VnLangTool::generate_ngram("hom nay toi di hoc nhu lon", 2);
 //    for (string ngram : ngrams) {

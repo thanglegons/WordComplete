@@ -14,10 +14,10 @@
 #include "HuffmanTreeNode.h"
 #include "vn_lang_tool.h"
 
-#define DECODE_FILE "../resources/decode_table.txt"
-#define RES_FILE "../resources/VNESEcorpus.txt"
+#define DECODE_FILE "./resources/decode_table.txt"
+#define RES_FILE "./resources/VNESEcorpus.txt"
 
-const uint32_t UINT32_LIM = uint32_t(1) << uint32_t(31);
+const uint32_t UINT32_LIM = uint32_t(1) << uint32_t(28);
 
 class Huffman {
 public:
@@ -26,7 +26,7 @@ public:
     std::map<int, std::string> huffman_table;
     std::map<std::string, int> re_huffman_table;
 
-    void BuildTable(std::shared_ptr<HuffmanTreeNode> node, int depth, char encoding[]) {
+    void BuildTable(const std::shared_ptr<HuffmanTreeNode>& node, int depth, char encoding[]) {
         if (node->left == nullptr && node->right == nullptr) {
             std::string decode;
             huffman_table[node->data] = "";
@@ -105,11 +105,11 @@ public:
         input_file.close();
     }
 
-    std::shared_ptr<HuffmanTreeNode> get_root() {
+    std::shared_ptr<HuffmanTreeNode> get_root() const {
         return root;
     }
 
-    uint32_t *encode(const std::string &text) {
+    uint32_t* encode(const std::string &text) {
         //std::string encoded = "";
         const std::string &normalized_text = text;//VnLangTool::normalize_lower_NFD_UTF(text);
         std::vector<uint32_t> utf8_text = VnLangTool::to_UTF(normalized_text);
@@ -153,6 +153,7 @@ public:
     }
 
     std::string decode(uint32_t da_text[]) {
+        if (da_text == nullptr) return "";
         std::vector<uint32_t> utf8_text;
         std::vector<uint32_t> text;
         std::string prefix;

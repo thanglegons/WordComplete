@@ -2,28 +2,42 @@
 #include <fstream>
 #include <trie/node.h>
 #include <trie/trie.h>
-#include <autocomplete.h>
+#include <word_complete.h>
 #include "huffman/Huffman.h"
 #include <queue>
 
 using namespace std;
 
 int main() {
-    Huffman huffman;
-    std::string text = "kết quả có vẻ hơi lạ nhưng thắng bị gay lmao kill me please mình đang làm gì thế này  lol kay";
-    uint32_t* encoded = huffman.encode(text);
-    //std::string encoded_manual_text = "11001001000111001101100111001101110000000011110111001010011000101110011111101101100101001000101100001100011001111110111110001111111010010011101110010011011111101001000011100000110111010001001110000";
-    cout<<"Input text : "<<text<<"\n";
-    //cout<<"Test encode : "<<encoded<<"\n";
-    cout<<"Test decode : "<<huffman.decode(encoded);
+//    Huffman huffman;
+//    std::string text = "ruyền thống";
+//    uint32_t* encoded = huffman.encode(text);
+//    //std::string encoded_manual_text = "11001001000111001101100111001101110000000011110111001010011000101110011111101101100101001000101100001100011001111110111110001111111010010011101110010011011111101001000011100000110111010001001110000";
+//    cout<<"Input text : "<<text<<"\n";
+//    //cout<<"Test encode : "<<encoded<<"\n";
+//    cout<<"Test decode : "<<huffman.decode(encoded);
 //    huffman.saveDecodeTable();
+//    std::cout << sizeof(std::string);
 
-//    AutoComplete autoComplete;
-//    autoComplete.load_data("./resources/VNESEcorpus.txt");
-//    std::vector<Candidate> suggestion = autoComplete.get_suggestion("của các nhà hảo tâm gửi giúp trước sự chứng kiến c");
-//    for (const Candidate& sug : suggestion) {
-//        cout << sug.get_suffix() << " " << sug.get_count() << "\n";
+    WordComplete autoComplete;
+//    autoComplete.load_raw_data("./resources/VNESEcorpus.txt", 1000);
+    autoComplete.load_compressed_data();
+    {
+        std::vector<std::string> suggestion = autoComplete.get_suggestion("");
+        for (const std::string& sug : suggestion) {
+            cout << sug << "\n";
+        }
+    }
+//    autoComplete.compress_data();
+//    autoComplete.save_trie();
+//    std::cout << "ok" << endl;
+//    {
+//        std::vector<std::string> suggestion = autoComplete.get_suggestion("của các nhà hảo tâm gửi giúp trước sự chứng kiến c");
+//        for (const std::string& sug : suggestion) {
+//            cout << sug << "\n";
+//        }
 //    }
+//    std::cout << "ok" << std::endl;
 
 //    vector<string> ngrams = VnLangTool::generate_ngram("hom nay toi di hoc nhu lon", 2);
 //    for (string ngram : ngrams) {

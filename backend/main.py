@@ -1,9 +1,13 @@
 from flask import Flask
 from flask import jsonify, request, make_response
 from pywordcomplete import WordComplete
+from flask_cors import CORS, cross_origin
 import os
-
 app = Flask(__name__)
+
+app.config['JSON_AS_ASCII'] = False
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 CORPUS_PATH = './resources/VNESEcorpus.txt'
 LIMIT_LINE = 10000
@@ -20,7 +24,8 @@ if not word_complete.load_compressed_data():
     word_complete.save_compressed_data()
 
 
-@app.route("/", methods=['GET'])
+@app.route("/api/complete", methods=['GET'])
+@cross_origin()
 def do_word_complete():
     query = request.args.get('query', default='', type=str)
     candidates = word_complete.get_suggestion(query)

@@ -18,6 +18,10 @@ class Candidate {
 public:
     Candidate() = default;
 
+    virtual ~Candidate() {
+        delete compressed_suffix;
+    }
+
     Candidate(std::shared_ptr<std::string> suffix, int32_t count) {
         this->suffix = std::move(suffix);
         this->count = count;
@@ -26,10 +30,6 @@ public:
     Candidate(uint32_t *_compressed_suffix, int32_t count) {
         this->compressed_suffix = _compressed_suffix;
         this->count = count;
-    }
-
-    ~Candidate() {
-        delete compressed_suffix;
     }
 
     bool operator<(const Candidate& rhs) const {
@@ -146,6 +146,7 @@ class TrieNode {
     int32_t count = 0;
     uint32_t label;
     std::shared_ptr<Candidates> candidates;
+
 public:
     TrieNode(std::shared_ptr<TrieNode> parent, uint32_t label) {
         this->parent = std::move(parent);

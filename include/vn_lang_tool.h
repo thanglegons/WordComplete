@@ -665,7 +665,8 @@ namespace VnLangTool
     }
 
     std::string remove_special_chars(const std::string& text) {
-        return std::regex_replace(text, std::regex(R"(([-,.:;\(\)_\[\]<>?|\"\'+=*&^%$#@!~`]))"), " ");
+        std::string removed_digits = std::regex_replace(text, std::regex(R"([^\s]*\d[^\s]*)"), " ");
+        return std::regex_replace(removed_digits, std::regex(R"(([-,.:;\(\)_\[\]<>?|\"\'+=*&^%$#@!~`]))"), " ");
     }
 
     bool is_vowel(const char& ch) {
